@@ -3,6 +3,8 @@ const http = require('http');
 const express = require('express');
 const socketIO = require('socket.io');
 
+const { generateMessage } = require('./utils/message');
+
 const publicPath = path.join(__dirname, '../public');
 const port = process.env.PORT || 3000;
 
@@ -15,20 +17,16 @@ app.use(express.static(publicPath));
 io.on('connection', socket => {
   console.log('a client has connected...');
 
-  socket.emit('newMessage', {
-    from: 'admin',
-    text: 'welcome to the mix!',
-    createdAt: Date.now()
-  });
+  socket.emit(generateMessage('admin', 'welcome to the mix!'));
 
-  socket.broadcast.emit('newMessage', {
-    from: 'admin',
-    text: `a new user has joined the mélange`,
-    createdAt: Date.now()
-  });
+  socket.broadcast.emit(
+    'newMessage',
+    generateMessage('admin', `a new user has joined the mélange`)
+  );
 
   socket.on('createMessage', ({ from, text }) => {
     console.log(`a message was received from ${from}`);
+    io.emit('newMessage', generateMessage(from, text));
 
     // io.emit('newMessage', {
     //   from,
@@ -36,11 +34,11 @@ io.on('connection', socket => {
     //   createdAt: Date.now()
     // });
 
-    socket.broadcast.emit('newMessage', {
-      from,
-      text,
-      createdAt: Date.now()
-    });
+    // socket.broadcast.emit('newMessage', {
+    //   from,
+    //   text,
+    //   createdAt: Date.now()
+    // });
   });
 
   socket.on('disconnect', () => {
