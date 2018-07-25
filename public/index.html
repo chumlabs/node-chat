@@ -10,6 +10,15 @@
 
 <body>
   <h1>Node Chat</h1>
+
+  <form id="message-form">
+    <input name="message" type="text" placeholder="type your message">
+    <button>Send</button>
+  </form>
+
+  <ul id="messages"></ul>
+
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script src="/js/index.js"></script>
 </body>
