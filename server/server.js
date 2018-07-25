@@ -3,7 +3,7 @@ const http = require('http');
 const express = require('express');
 const socketIO = require('socket.io');
 
-const { generateMessage } = require('./utils/message');
+const { generateMessage, generateLocation } = require('./utils/message');
 
 const publicPath = path.join(__dirname, '../public');
 const port = process.env.PORT || 3000;
@@ -26,7 +26,7 @@ io.on('connection', socket => {
     generateMessage('admin', `a new user has joined the mélange`)
   );
 
-  // message received from client
+  // message listener
   socket.on('createMessage', ({ from, text }, callback) => {
     console.log(`a message was received from ${from}`);
 
@@ -49,6 +49,11 @@ io.on('connection', socket => {
     //   text,
     //   createdAt: Date.now()
     // });
+  });
+
+  // location listener
+  socket.on('createLocationMessage', ({ latitude, longitude }) => {
+    io.emit('newLocation', generateLocation('admin', { latitude, longitude }));
   });
 
   socket.on('disconnect', () => {
