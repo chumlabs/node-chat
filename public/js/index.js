@@ -15,8 +15,10 @@ socket.on('disconnect', function() {
 socket.on('newMessage', ({ from, text, createdAt }) => {
   console.log(`new message arrived`);
 
+  var formattedTime = moment(createdAt).format('h:mm a');
+
   var li = $('<li></li>');
-  li.text(`${from}: ${text}`);
+  li.text(`${from} [ ${formattedTime} ]: ${text}`);
   $('#messages').append(li);
 });
 
@@ -24,10 +26,12 @@ socket.on('newMessage', ({ from, text, createdAt }) => {
 socket.on('newLocation', ({ from, url, createdAt }) => {
   console.log('location received');
 
-  var li = $('<li></li>');
-  var a = $(`<a target=_blank>Click to see location</a>`);
+  var formattedTime = moment(createdAt).format('h:mm a');
 
-  li.text(`${from}: a user send their location. `);
+  var li = $('<li></li>');
+  var a = $(`<a target=_blank>Click to see my current location</a>`);
+
+  li.text(`${from} [ ${formattedTime} ]: `);
   a.attr('href', url);
   li.append(a);
 
@@ -35,7 +39,7 @@ socket.on('newLocation', ({ from, url, createdAt }) => {
 });
 
 // add form input change listener
-$('[name=message]').on('keyup', function(e) {
+$('#message-form').on('keyup', function(e) {
   var messageButton = $('#send-message');
   var messageTextbox = $('[name=message]');
 
@@ -51,6 +55,7 @@ $('#message-form').on('submit', function(e) {
 
   var messageTextbox = $('[name=message]');
 
+  // send message
   socket.emit(
     'createMessage',
     {
@@ -62,12 +67,17 @@ $('#message-form').on('submit', function(e) {
       messageTextbox.val('');
     }
   );
+
+  // focus back on message input box
+  messageTextbox.focus();
 });
 
 // location button listener & handler
 var locationButton = $('#send-location');
 locationButton.on('click', function(e) {
   if (!navigator.geolocation) return alert('geoloction not supported on your browser');
+
+  var messageTextbox = $('[name=message]');
 
   // disable send location button
   locationButton.attr('disabled', 'true').text('Sending Now...');
@@ -82,6 +92,9 @@ locationButton.on('click', function(e) {
         latitude,
         longitude
       });
+
+      // focus back on message input box
+      messageTextbox.focus();
     },
     function() {
       // re-enable send location button
