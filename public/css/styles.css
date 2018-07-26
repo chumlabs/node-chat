@@ -40,10 +40,10 @@ button:disabled {
   background: #698ea5;
 }
 
-.main__container {
+/* .main__container {
   display: flex;
   flex-direction: row;
-}
+} */
 
 .centered-form {
   display: flex;
@@ -181,6 +181,8 @@ button:disabled {
 }
 
 .chat__messages {
+  margin: 0;
+  padding: 0;
   flex-grow: 1;
   overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
@@ -219,13 +221,23 @@ button:disabled {
 }
 
 .message__title {
-  display: flex;
+  margin: 0;
   margin-bottom: 5px;
+  padding: 0;
+  display: flex;
+  align-items: center;
 }
 
 .message__title h4 {
   font-weight: 600;
+  margin: 0;
   margin-right: 10px;
+  padding: 0;
+}
+
+.message__body p {
+  margin: 0;
+  padding: 0;
 }
 
 .message__title span {
