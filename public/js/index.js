@@ -34,18 +34,32 @@ socket.on('newLocation', ({ from, url, createdAt }) => {
   $('#messages').append(li);
 });
 
+// add form input change listener
+$('[name=message]').on('keyup', function(e) {
+  var messageButton = $('#send-message');
+  var messageTextbox = $('[name=message]');
+
+  // console.log(e.type);
+
+  if (messageTextbox.val() === '') messageButton.attr('disabled', 'true');
+  else messageButton.removeAttr('disabled');
+});
+
 // add form submit event listener & handler
 $('#message-form').on('submit', function(e) {
   e.preventDefault();
+
+  var messageTextbox = $('[name=message]');
 
   socket.emit(
     'createMessage',
     {
       from: 'jahlive',
-      text: $('[name=message]').val()
+      text: messageTextbox.val()
     },
     function(data) {
       console.log(`${data}`);
+      messageTextbox.val('');
     }
   );
 });
@@ -55,14 +69,24 @@ var locationButton = $('#send-location');
 locationButton.on('click', function(e) {
   if (!navigator.geolocation) return alert('geoloction not supported on your browser');
 
+  // disable send location button
+  locationButton.attr('disabled', 'true').text('Sending Now...');
+
   navigator.geolocation.getCurrentPosition(
     function({ coords: { latitude, longitude } }) {
+      // re-enable send location button
+      locationButton.removeAttr('disabled').text('Send Location');
+
+      // send location to server
       socket.emit('createLocationMessage', {
         latitude,
         longitude
       });
     },
     function() {
+      // re-enable send location button
+      locationButton.removeAttr('disabled').text('Send Location');
+
       alert('unable to retrieve your location');
     }
   );
